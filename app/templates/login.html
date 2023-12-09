@@ -1,0 +1,33 @@
+{% extends "core.html" %}
+{% load static %}
+
+{% block title %}Login - Enkripsi RSA{% endblock title %}
+
+{% block content %}
+  <div class="container vw-100 vh-100 d-flex justify-content-center align-items-center">
+    <div class="w-25">
+      <div class="mb-3 d-flex justify-content-between align-items-center">
+        <div class="w-25">
+          <img src="{% static 'icons/logo.png' %}" alt="logo" class="img-fluid"/>
+        </div>
+        <div class="me-4">
+          <p class="fw-bold mb-0">AsymmFile Encryption</p>
+          <p>Welcome Back ...</p>
+        </div>
+      </div>
+      <form action="#" method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+          <input type="text" id="username" class="form-control" placeholder="Email or Username"/>
+        </div>
+        <div class="mb-3">
+          <input type="password" id="password" class="form-control" placeholder="Password"/>
+        </div>
+        <button type="submit" class="btn btn-primary">Login</button>
+      </form>
+      <div class="mt-3">
+        <a href="">What is RSA ?</a>
+      </div>
+    </div>
+  </div>
+{% endblock content %}
