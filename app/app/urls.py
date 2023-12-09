@@ -17,12 +17,14 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
-from app.views import Dashboard
+from app.views import Login, Dashboard, NotFound
 
 
 urlpatterns = [
+    path("", Login.as_view(), name="login"),
     path("admin/", admin.site.urls),
     path("dashboard/", Dashboard.as_view(), name="dashboard"),
     path("decryption/", include("decryption.urls"), name="decryption"),
-    path("encryption/", include("encryption.urls"), name="encryption")
+    path("encryption/", include("encryption.urls"), name="encryption"),
+    path("<path:unknown_path>", NotFound.as_view(), name="catch_all")
 ]
