@@ -32,8 +32,16 @@
     </a>
   </div>
 
+  {% if request.GET.login_status == "BAD" %}
+    <div class="container mt-3 border-1 border-black bg-warning-subtle p-4 rounded">
+      <p class="fs-6 text-secondary-emphasis text-center m-0">
+        Either it's server's fault or you entered a dirty data. Please try again.
+      </p>
+    </div>
+  {% endif %}
+
   {% if request.GET.login_status == "WRONG_PASSWORD" %}
-    <div class="container mt-3 border-1 border-black bg-danger-subtle p-4 rounded">
+    <div class="container mt-3 border-1 border-black bg-warning-subtle p-4 rounded">
       <p class="fs-6 text-secondary-emphasis text-center m-0">
         Wrong password. Please try again.
       </p>
@@ -41,9 +49,25 @@
   {% endif %}
 
   {% if request.GET.login_status == "USER_DOES_NOT_EXIST" %}
-    <div class="container mt-3 border-1 border-black bg-danger-subtle p-4 rounded">
+    <div class="container mt-3 border-1 border-black bg-warning-subtle p-4 rounded">
       <p class="fs-6 text-secondary-emphasis text-center m-0">
         The User you entered, is not registered in the database.
+      </p>
+    </div>
+  {% endif %}
+
+  {% if request.GET.registration_status == "BAD" %}
+    <div class="container mt-3 border-1 border-black bg-danger-subtle p-4 rounded">
+      <p class="fs-6 text-secondary-emphasis text-center m-0">
+        Registration failed. Please fill the data properly and try again.
+      </p>
+    </div>
+  {% endif %}
+
+  {% if request.GET.registration_status == "OK" %}
+    <div class="container mt-3 border-1 border-black bg-primary-subtle p-4 rounded">
+      <p class="fs-6 text-secondary-emphasis text-center m-0">
+        Registration successful. Please login with said account.
       </p>
     </div>
   {% endif %}
