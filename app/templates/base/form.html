@@ -1,0 +1,23 @@
+{% extends "core.html" %}
+{% load static %}
+
+{% block content %}
+  <div class="container vw-100 vh-100 d-flex justify-content-center align-items-center">
+    <div class="w-25">
+      <div class="mb-3 d-flex justify-content-between align-items-center">
+        <div class="w-25">
+          <img src="{% static 'icons/logo.png' %}" alt="logo" class="img-fluid"/>
+        </div>
+        <div class="me-4">
+          <p class="fw-bold mb-0">AsymmFile Encryption</p>
+          {% block description %}{% endblock description %}
+        </div>
+      </div>
+      <form action="{% block action %}{% endblock action %}" method="post">
+        {% csrf_token %}
+        {% block fields %}{% endblock fields %}
+      </form>
+      {% block footer %}{% endblock footer %}
+    </div>
+  </div>
+{% endblock content %}
