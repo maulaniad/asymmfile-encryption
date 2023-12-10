@@ -4,6 +4,7 @@ from django.http import HttpRequest, HttpResponse
 from django.views import View
 from django.shortcuts import redirect, render
 
+from data.forms import LoginForm, RegisterForm
 from data.models import User
 
 # Create your views here.
@@ -16,17 +17,22 @@ class Login(View):
         )
 
     def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
-        username_or_email = request.POST.get('username', None)
-        password = request.POST.get('password', None)
+        form = LoginForm(request.POST)
+
+        if not form.is_valid():
+            return redirect(to="/login/?login_status=BAD")
+
+        username = form.cleaned_data['username']
+        password = form.cleaned_data['password']
 
         user_data = User.objects.filter(
-            Q(username=username_or_email) | Q(email=username_or_email)
+            Q(username=username) | Q(email=username)
         ).first()
 
         if not user_data:
-            return redirect(to="/login/?login_status=USER_NOT_EXIST")
+            return redirect(to="/login/?login_status=USER_DOES_NOT_EXIST")
 
-        if not check_password(password, user_data.password):
+        if not check_password(password=password, encoded=user_data.password):
             return redirect(to="/login/?login_status=WRONG_PASSWORD")
 
         return redirect(to="/dashboard/")
@@ -40,15 +46,20 @@ class Register(View):
         )
 
     def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
-        username = request.POST.get('username', None)
-        email = request.POST.get('email', None)
-        fullname = request.POST.get('fullname', None)
-        password = make_password(request.POST.get('passwordA', None))
+        form = RegisterForm(request.POST)
+
+        if not form.is_valid():
+            return redirect(to="/login/?register_status=BAD")
+
+        email = form.cleaned_data['email']
+        fullname = form.cleaned_data['fullname']
+        username = form.cleaned_data['username']
+        password = make_password(form.cleaned_data['password'])
 
         user_data = User(
-            username=username,
             email=email,
             fullname=fullname,
+            username=username,
             password=password
         )
 
