@@ -20,7 +20,7 @@ class Login(View):
         password = request.POST.get('password', None)
 
         user_data = User.objects.filter(
-            Q(username=username_or_email) | Q(username=username_or_email)
+            Q(username=username_or_email) | Q(email=username_or_email)
         ).first()
 
         if not user_data:
