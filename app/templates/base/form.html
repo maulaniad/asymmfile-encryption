@@ -2,22 +2,26 @@
 {% load static %}
 
 {% block content %}
-  <div class="container vw-100 vh-100 d-flex justify-content-center align-items-center">
-    <div class="w-25">
-      <div class="mb-3 d-flex justify-content-between align-items-center">
-        <div class="w-25">
-          <img src="{% static 'icons/logo.png' %}" alt="logo" class="img-fluid"/>
-        </div>
-        <div class="me-4">
-          <p class="fw-bold mb-0">AsymmFile Encryption</p>
-          {% block description %}{% endblock description %}
-        </div>
+<main class="flex items-center min-h-screen pt-3">
+  <div class="flex flex-col w-full items-center">
+    <div class="inline-flex flex-col items-center ">
+      <div class="inline-flex">
+        <img src="{% static 'icons/logo.png' %}" alt="logo" class="w-10 h-10
+          md:w-16 md:h-16"/>
       </div>
-      <form action="{% block action %}{% endblock action %}" method="post">
+      <div class="inline-flex flex-col items-center mt-2">
+        <p class="font-bold text-lg md:text-2xl mb-0">AsymmFile Encryption</p>
+        {% block description %}{% endblock description %}
+      </div>
+    </div>
+    <div class="w-[30%] max-sm:w-auto py-8">
+      <form action="{% block action %}{% endblock action %}" method="post"
+        class="max-w-md mx-auto">
         {% csrf_token %}
         {% block fields %}{% endblock fields %}
       </form>
       {% block footer %}{% endblock footer %}
     </div>
   </div>
+</main>
 {% endblock content %}
