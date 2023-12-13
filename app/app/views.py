@@ -35,6 +35,10 @@ class Login(View):
         if not check_password(password=password, encoded=user_data.password):
             return redirect(to="/login/?login_status=WRONG_PASSWORD")
 
+        request.session['email'] = user_data.email
+        request.session['fullname'] = user_data.fullname
+        request.session['username'] = user_data.username
+
         return redirect(to="/dashboard/")
 
 
@@ -73,7 +77,6 @@ class Dashboard(View):
         return render(
             request=request,
             template_name="dashboard.html",
-            context={'test': "Hello World"}
         )
 
 
