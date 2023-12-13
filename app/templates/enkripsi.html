@@ -1,0 +1,122 @@
+{% extends "core.html" %}
+{% load static %}
+
+{% block title %}Dashboard{% endblock title %}
+
+{% block content %}
+
+
+{% include "sideBar.html" %}
+
+<main class="p-4 md:ml-64">
+    <div class="p-4 rounded-lg ">
+        <form action="/enkripsi/" method="post">
+            <div class="grid lg:grid-cols-2 gap-4">
+                <div class="flex justify-center rounded bg-gray-50 dark:bg-gray-800 shadow shadow-black">
+                    <div class="w-full p-1">
+                        <div
+                            class="flex justify-center text-2xl font-medium text-white bg-slate-700 w-full h-fit px-3 py-2">
+                            <i class="fa-solid fa-key"></i>
+                            GENERATE KEY RSA
+                        </div>
+                        <div class="flex flex-col justify-center bg-gray-100 dark:bg-gray-800 font-medium">
+                            <table class="table-auto justify-center">
+                                <tbody>
+                                    <tr class="">
+                                        <td class="p-2 text-right">p</td>
+                                        <td class="p-2">:</td>
+                                        <td class="p-2">
+                                            <input type="text"
+                                                class="max-xl:w-20 px-2 py-1 bg-gray-300 dark:bg-gray-600"
+                                                placeholder=" " id="p" disabled />
+                                        </td>
+                                        <td class="p-2 text-gray-700 dark:text-white">Bil. Prima</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-2 text-right">q</td>
+                                        <td class="p-2">:</td>
+                                        <td class="p-2">
+                                            <input type="text"
+                                                class="max-xl:w-20 px-2 py-1 bg-gray-300 dark:bg-gray-600"
+                                                placeholder=" " id="q" disabled />
+                                        </td>
+                                        <td class="p-2 text-gray-700 dark:text-white">Bil. Prima</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-2 text-right">n</td>
+                                        <td class="p-2">:</td>
+                                        <td class="p-2">
+                                            <input type="text"
+                                                class="max-xl:w-20 px-2 py-1 bg-gray-300 dark:bg-gray-600"
+                                                placeholder=" " id="n" disabled />
+                                        </td>
+                                        <td class="p-2 text-gray-700 dark:text-white">(p * q)</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-2 text-right">m</td>
+                                        <td class="p-2">:</td>
+                                        <td class="p-2">
+                                            <input type="text"
+                                                class="max-xl:w-20 px-2 py-1 bg-gray-300 dark:bg-gray-600"
+                                                placeholder=" " id="m" disabled />
+                                        </td>
+                                        <td class="p-2 text-gray-700 dark:text-white">(p - 1) * (q - 1)</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-2 text-right">e</td>
+                                        <td class="p-2">:</td>
+                                        <td class="p-2">
+                                            <input type="text"
+                                                class="max-xl:w-20 px-2 py-1 bg-gray-300 dark:bg-gray-600"
+                                                placeholder=" " id="e" disabled />
+                                        </td>
+                                        <td class="p-2 text-gray-700 dark:text-white">e > 1 and GCD(m,e) = 1</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-2 text-right">d</td>
+                                        <td class="p-2">:</td>
+                                        <td class="p-2">
+                                            <input type="text"
+                                                class="max-xl:w-20 px-2 py-1 bg-gray-300 dark:bg-gray-600"
+                                                placeholder=" " id="d" disabled />
+                                        </td>
+                                        <td class="p-2 text-gray-700 dark:text-white">(d * e) mod m = 1</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-2 text-right">Key RSA</td>
+                                        <td class="p-2">:</td>
+                                        <td class="p-2">
+                                            <input type="text"
+                                                class="max-xl:w-20 px-2 py-1 bg-gray-300 dark:bg-gray-600"
+                                                placeholder=" " id="keyRSA" disabled />
+                                        </td>
+                                        <td class="p-2 text-gray-700 dark:text-white">(d * e) mod m = 1</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div class="flex w-full justify-center py-3">
+                                <button type="button"
+                                    class="text-white bg-gradient-to-r from-green-400 via-green-500 to-green-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-green-300 dark:focus:ring-green-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Re-Generate
+                                    Key</button>
+                                <button type="button"
+                                    class="text-white bg-gradient-to-r from-red-400 via-red-500 to-red-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Encrypt
+                                    Proccess</button>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+                <div class="flex items-center justify-center rounded bg-gray-50 h-28 dark:bg-gray-800">
+                    <p class="text-2xl text-gray-400 dark:text-gray-500"></p>
+                </div>
+            </div>
+        </form>
+    </div>
+</main>
+{% endblock content %}
+
+
+{% block script %}
+<script type="text/javascript" src="/static/scripts/encrypt.js"></script>
+{% endblock script %}

@@ -11,7 +11,7 @@
       </div>
     </div>
     <div class="w-[30%] max-sm:w-auto py-8">
-      <form action="{% block action %}{% endblock action %}" method="post" class="max-w-md mx-auto" autocomplete="off">
+      <form action="{% block action %}{% endblock action %}" method="post" class="max-w-md mx-auto" autocomplete="off" id="form">
         {% csrf_token %} {% block fields %}{% endblock fields %}
       </form>
       {% block footer %}{% endblock footer %}
