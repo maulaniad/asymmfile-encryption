@@ -7,6 +7,7 @@ from helpers.types import ALLOWED_FILETYPES, USER_ACTION
 # Create your models here.
 
 class User(models.Model):
+    id = models.BigAutoField(primary_key=True)
     begin_date = models.DateField(auto_now_add=True)
     end_date = models.DateField(default=date(2099, 11, 11))
 
@@ -20,6 +21,7 @@ class User(models.Model):
 
 
 class File(models.Model):
+    id = models.BigAutoField(primary_key=True)
     begin_date = models.DateField(auto_now_add=True)
     end_date = models.DateField(default=date(2099, 11, 11))
 
@@ -33,6 +35,7 @@ class File(models.Model):
 
 
 class RSAKeyPair(models.Model):
+    id = models.BigAutoField(primary_key=True)
     begin_date = models.DateField(auto_now_add=True)
     end_date = models.DateField(default=date(2099, 11, 11))
 
@@ -45,6 +48,7 @@ class RSAKeyPair(models.Model):
 
 
 class Log(models.Model):
+    id = models.BigAutoField(primary_key=True)
     begin_date = models.DateField(auto_now_add=True)
     end_date = models.DateField(default=date(2099, 11, 11))
 
