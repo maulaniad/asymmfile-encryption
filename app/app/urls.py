@@ -26,7 +26,7 @@ urlpatterns = [
 
     path("login/", Login.as_view(), name="login"),
     path("register/", Register.as_view(), name="register"),
-    path("logout", Logout.as_view(), name="logout"),
+    path("logout/", Logout.as_view(), name="logout"),
 
     path("dashboard/", Dashboard.as_view(), name="dashboard"),
     path("decryption/", include("decryption.urls")),
