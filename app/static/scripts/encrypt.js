@@ -5,6 +5,8 @@ const mValue = document.getElementById('m');
 const eValue = document.getElementById('e');
 const dValue = document.getElementById('d');
 const keyRSA = document.getElementById('keyRSA');
+const keyTable = document.getElementById('key_table');
+const regButton = document.getElementById('regenerate');
 
 function isPrime(num) {
     if (num < 2) return false;
@@ -15,18 +17,23 @@ function isPrime(num) {
 }
 
 function getRandomPrime() {
-    let randomNum = Math.floor(Math.random() * 100) + 1;
-    while (!isPrime(randomNum)) {
-        randomNum = Math.floor(Math.random() * 100) + 1;
+    let primeNum = Math.floor(Math.random() * 100) + 1;
+    while (!isPrime(primeNum)) {
+        primeNum = Math.floor(Math.random() * 100) + 1;
     }
-    return randomNum;
+    return primeNum;
 }
 
-pValue.value = getRandomPrime();
-qValue.value = getRandomPrime();
-nValue.value = pValue.value * qValue.value;
-mValue.value = (pValue.value - 1) * (qValue.value - 1);
-eValue.value = 0;
-dValue.value = 0;
-keyRSA.value = 0;
+function setNum() {
+    qValue.value = getRandomPrime();
+    pValue.value = getRandomPrime();
+    nValue.value = pValue.value * qValue.value;
+    mValue.value = (pValue.value - 1) * (qValue.value - 1);
+    eValue.value = 0;
+    dValue.value = 0;
+    keyRSA.value = 123;
+}
+
+document.addEventListener("DOMContentLoaded", setNum);
+regButton.addEventListener('click', setNum);
 
