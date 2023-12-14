@@ -96,10 +96,10 @@ class Register(View):
 
 class Logout(View):
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
-        request.session.delete('user_id')
-        request.session.delete('email')
-        request.session.delete('username')
-        request.session.delete('fullname')
+        request.session.pop('user_id', None)
+        request.session.pop('email', None)
+        request.session.pop('username', None)
+        request.session.pop('fullname', None)
         request.session.flush()
 
         return redirect(to="/login/")
