@@ -18,9 +18,7 @@ class SessionCorrector(View):
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         try:
             if request.session['is_loggedin']:
-                request.session['email']
-                request.session['username']
-                request.session['fullname']
+                request.session['user_id']
 
             return redirect(to="/dashboard/")
         except KeyError:
@@ -55,6 +53,7 @@ class Login(View):
         if not check_password(password=password, encoded=user_data.password):
             return redirect(to="/login/?login_status=WRONG_PASSWORD")
 
+        request.session['user_id'] = user_data.id
         request.session['email'] = user_data.email
         request.session['fullname'] = user_data.fullname
         request.session['username'] = user_data.username
@@ -97,6 +96,7 @@ class Register(View):
 
 class Logout(View):
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+        request.session.delete('user_id')
         request.session.delete('email')
         request.session.delete('username')
         request.session.delete('fullname')
