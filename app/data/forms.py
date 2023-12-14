@@ -1,6 +1,6 @@
 from django import forms
 
-# Create your forms here, either use it for validation or renders it in a View.
+# Create your forms here, either use it for validation or render it in a View.
 
 class LoginForm(forms.Form):
     username = forms.CharField(max_length=256)
