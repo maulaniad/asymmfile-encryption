@@ -34,6 +34,13 @@ function setNum() {
     keyRSA.value = 123;
 }
 
+function getCode() {
+    fetch('')
+        .then(res => res.text()
+            .then(res => console.log(res)))
+        .catch(err => console.log(err));
+}
+
 document.addEventListener("DOMContentLoaded", setNum);
 regButton.addEventListener('click', setNum);
 

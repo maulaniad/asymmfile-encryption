@@ -1,0 +1,73 @@
+{% extends "core.html" %}
+{% load static %}
+
+{% block title %}Dashboard{% endblock title %}
+
+{% block content %}
+
+
+{% include "sideBar.html" %}
+
+<main class="p-4 md:ml-64">
+    <div class="p-4 rounded-lg ">
+        <div class="grid lg:grid-cols-2 gap-4">
+            <div class="flex justify-center rounded bg-gray-100 dark:bg-gray-800 font-medium shadow shadow-black">
+                <div class="w-full p-1">
+                    <div
+                        class="flex justify-center items-center gap-1 text-2xl text-white bg-slate-700 w-full h-fit px-3 py-2">
+                        <i class="fa-solid fa-lock"></i>
+                        CHIPERTEXT
+                    </div>
+                    <div class="flex flex-col justify-center p-2">
+                        <form action="/decryption/" method="post" id="formEncrypt">
+                            <div class="flex flex-col">
+                                <label for="keyRSA"
+                                    class="block py-2 px-1 text-sm font-medium text-gray-900 dark:text-white">Key
+                                    RSA</label>
+                                <input type="text" name="keyRSA"
+                                    class="px-2 py-1 text-gray-900 bg-gray-50 dark:text-white dark:bg-gray-700 placeholder:text-xs font-normal"
+                                    placeholder="Write your key..." id="keyRSA" />
+                            </div>
+                            <div>
+                                <label for="chipertext"
+                                    class="block py-2 px-1 text-sm font-medium text-gray-900 dark:text-white">Chipertext</label>
+                                <textarea id="chipertext" rows="7" form="formEncrypt"
+                                    class="block p-2.5 w-full text-sm font-normal text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                    placeholder="Write your text here..."></textarea>
+                            </div>
+                            <div class="flex w-full py-3">
+                                <button type="submit"
+                                    class="text-white bg-gradient-to-r from-red-400 via-red-500 to-red-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">
+                                    <i class="fa-solid fa-lock-open"></i>
+                                    Decryption Proccess</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="flex justify-center rounded bg-gray-100 dark:bg-gray-800 font-medium">
+                <div class="w-full p-1">
+                    <div
+                        class="flex justify-center text-2xl text-white bg-slate-700 w-full h-fit px-3 py-2 gap-1 items-center">
+                        <i class="fa-solid fa-lock-open"></i>
+                        PLAINTEXT
+                    </div>
+                    <div class="flex flex-col gap-2 p-2 justify-center">
+                        <div>
+                            <label for="plaintext"
+                                class="block py-2 px-1 text-sm font-medium text-gray-900 dark:text-white">Plaintext</label>
+                            <textarea id="plaintext" rows="10" form="formEncrypt"
+                                class="block p-2.5 w-full text-sm font-normal text-gray-900 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                placeholder="   " disabled></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+</main>
+{% endblock content %}
+
+
+{% block script %}
+<script type="text/javascript" src="/static/scripts/decrypt.js"></script>
+{% endblock script %}

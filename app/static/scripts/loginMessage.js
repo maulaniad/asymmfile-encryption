@@ -18,6 +18,6 @@ document.addEventListener("DOMContentLoaded", function () {
         messageElement.textContent = "Registration successful. Please login with said account.";
     }
     setTimeout(() => {
-        messageElement.style.display = 'none';
+        messageElement.textContent = '';
     }, 5000); // 5000 milidetik (5 detik)
 });
