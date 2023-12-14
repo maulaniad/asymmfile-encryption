@@ -8,5 +8,5 @@ class Encryption(View):
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         return render(
             request=request,
-            template_name="encryption"
+            template_name="encryption.html"
         )

@@ -1,5 +1,8 @@
 from django.urls import path
 
-urlpatterns = [
+from decryption.views import Decryption
 
+
+urlpatterns = [
+    path("", Decryption.as_view(), name="decryption")
 ]
