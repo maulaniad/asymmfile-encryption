@@ -21,16 +21,16 @@ from app.views import SessionCorrector, Login, Register, Logout, Dashboard, NotF
 
 
 urlpatterns = [
-    path("", SessionCorrector.as_view(), name="session"),
+    path("", SessionCorrector.as_view(), name="session_corrector"),
     path("admin/", admin.site.urls),
 
     path("login/", Login.as_view(), name="login"),
     path("register/", Register.as_view(), name="register"),
-    path("logout", Logout.as_view(), name="logout"),
+    path("logout/", Logout.as_view(), name="logout"),
 
     path("dashboard/", Dashboard.as_view(), name="dashboard"),
-    path("decryption/", include("decryption.urls"), name="decryption"),
-    path("encryption/", include("encryption.urls"), name="encryption"),
+    path("decryption/", include("decryption.urls")),
+    path("encryption/", include("encryption.urls")),
 
     path("<path:unknown_path>", NotFound.as_view(), name="catch_all")
 ]
