@@ -9,8 +9,28 @@ from data.models import User
 
 # Create your views here.
 
+def session_checker(request: HttpRequest):
+    if request.session.get('is_loggedin', None):
+        return redirect(to="/dashboard/", permanent=True)
+
+
+class SessionCorrector(View):
+    def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+        try:
+            if request.session['is_loggedin']:
+                request.session['email']
+                request.session['username']
+                request.session['fullname']
+
+            return redirect(to="/dashboard/")
+        except KeyError:
+            return redirect(to="/login/")
+
+
 class Login(View):
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+        session_checker(request=request)
+
         return render(
             request=request,
             template_name="login.html"
@@ -38,12 +58,15 @@ class Login(View):
         request.session['email'] = user_data.email
         request.session['fullname'] = user_data.fullname
         request.session['username'] = user_data.username
+        request.session['is_loggedin'] = True
 
         return redirect(to="/dashboard/")
 
 
 class Register(View):
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+        session_checker(request=request)
+
         return render(
             request=request,
             template_name="register.html"
@@ -70,6 +93,16 @@ class Register(View):
         user_data.save()
 
         return redirect(to="/login/?register_status=OK")
+
+
+class Logout(View):
+    def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+        request.session.delete('email')
+        request.session.delete('username')
+        request.session.delete('fullname')
+        request.session.flush()
+
+        return redirect(to="/login/")
 
 
 class Dashboard(View):
