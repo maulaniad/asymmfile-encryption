@@ -13,10 +13,10 @@
 </head>
 
 <body class="dark:bg-[#010101] dark:text-white">
-  {% block content %}{% endblock content %}
+  {% block content %}
+  {% endblock content %}
+  {% include "modal.confirm.html" %}
   {% block script %}{% endblock script %}
-
-  <script type="text/javascript" src="/static/scripts/script.js"></script>
 </body>
 
 </html>
