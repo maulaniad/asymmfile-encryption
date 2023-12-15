@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Encryption',
+            name='Decryption',
             fields=[
                 ('id', models.BigAutoField(primary_key=True, serialize=False)),
                 ('begin_date', models.DateField(auto_now_add=True)),
@@ -24,7 +24,7 @@ class Migration(migrations.Migration):
                 ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='data.user')),
             ],
             options={
-                'db_table': 'tb_encryption',
+                'db_table': 'tb_decryption',
             },
         ),
     ]
