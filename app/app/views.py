@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.db.models import Q
 from django.contrib.auth.hashers import make_password, check_password
 from django.http import HttpRequest, HttpResponse
@@ -37,6 +39,8 @@ class Login(View):
         password = form.cleaned_data['password']
 
         user_data = User.objects.filter(
+            Q(begin_date__lte=datetime.now()),
+            Q(end_date__gte=datetime.now()),
             Q(username=username) | Q(email=username)
         ).first()
 
