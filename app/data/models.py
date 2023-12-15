@@ -26,7 +26,7 @@ class File(models.Model):
     end_date = models.DateField(default=date(2099, 11, 11))
 
     file_name = models.CharField(max_length=50)
-    file_path = models.CharField(max_length=100)
+    file_path = models.FileField(upload_to="uploads/")
     size = models.DecimalField(max_digits=5, decimal_places=2)
     extension = models.CharField(max_length=5, choices=ALLOWED_FILETYPES)
 
