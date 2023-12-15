@@ -9,11 +9,6 @@ from data.models import User
 
 # Create your views here.
 
-def session_checker(request: HttpRequest):
-    if request.session.get('is_loggedin', None):
-        return redirect(to="/dashboard/", permanent=True)
-
-
 class SessionCorrector(View):
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         try:
@@ -27,8 +22,6 @@ class SessionCorrector(View):
 
 class Login(View):
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
-        session_checker(request=request)
-
         return render(
             request=request,
             template_name="login.html"
@@ -64,8 +57,6 @@ class Login(View):
 
 class Register(View):
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
-        session_checker(request=request)
-
         return render(
             request=request,
             template_name="register.html"
@@ -95,7 +86,7 @@ class Register(View):
 
 
 class Logout(View):
-    def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+    def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         request.session.pop('user_id', None)
         request.session.pop('email', None)
         request.session.pop('username', None)
