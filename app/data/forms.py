@@ -12,3 +12,10 @@ class RegisterForm(forms.Form):
     fullname = forms.CharField(max_length=50)
     username = forms.CharField(max_length=25)
     password = forms.CharField(widget=forms.PasswordInput())
+
+
+class FileForm(forms.Form):
+    file_name = forms.CharField(max_length=50)
+    file_path = forms.FileField()
+    size = forms.DecimalField(max_digits=5, decimal_places=2)
+    extension = forms.CharField(max_length=5)
