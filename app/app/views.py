@@ -6,8 +6,8 @@ from django.http import HttpRequest, HttpResponse
 from django.views import View
 from django.shortcuts import redirect, render
 
-from data.forms import LoginForm, RegisterForm
-from data.models import User
+from database.forms import LoginForm, RegisterForm
+from database.models import User
 
 # Create your views here.
 
@@ -108,9 +108,9 @@ class Dashboard(View):
         )
 
 
-class NotFound(View):
+class MasterData(View):
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         return render(
             request=request,
-            template_name="404_not_found.html"
+            template_name="master_data.html",
         )

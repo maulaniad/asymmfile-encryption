@@ -1,0 +1,150 @@
+{% extends "core.html" %}
+{% load static %}
+
+{% block title %}Create Format{% endblock title %}
+
+{% block content %}
+
+{% include "sidebar.html" %}
+
+<main class="p-4 md:ml-64">
+  <form class="max-w-md mx-auto" id="dynamic-form">
+    <div class="my-3">
+      <h1>Create or Edit Data Format</h1>
+    </div>
+    <div class="relative z-0 w-full mb-5 group">
+      <input type="text" name="form-data" id="form-data" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required />
+      <label for="form-data" class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Choose or Input Data Format</label>
+      <div class="hidden w-full bg-gray-800" id="select-container">
+
+      </div>
+    </div>
+    <div id="input-container" class="space-y-4">
+      <div class="grid md:grid-cols-2 md:gap-6 relative z-0 w-full mb-5 group" id="field-set-1">
+        <div class="relative z-0 w-full mb-5 group">
+          <input type="text" name="column-1" id="column-1" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required />
+          <label for="column-1" class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Column Name</label>
+        </div>
+        <div class="relative z-0 w-full mb-5 group">
+          <select name="data-type-1" id="data-type-1" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" required>
+            <option value="" disabled selected>Select Data Type</option>
+            <option value="text">Text</option>
+            <option value="number">Number</option>
+            <option value="date">Date</option>
+          </select>
+          <label for="data-type-1" class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Data Type</label>
+        </div>
+        <button type="button" class="delete-field-button absolute top-0 right-0 text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-2.5 py-1.5 text-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800">Delete</button>
+      </div>
+    </div>
+    <a href="{% url 'data_entry:data_entry' %}">
+      <button type="button" class="text-white bg-amber-700 hover:bg-amber-800 focus:ring-4 focus:outline-none focus:ring-amber-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-amber-600 dark:hover:bg-amber-700 dark:focus:ring-amber-800">Back</button>
+    </a>
+    <button type="button" id="add-field-button" class="text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"> + Add Field</button>
+    <button type="button" id="submit-button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 mt-4">Submit</button>
+    {% csrf_token %}
+  </form>
+</main>
+{% endblock content %}
+
+{% block script %}
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    let fieldCount = 1;
+    const inputContainer = document.getElementById('input-container');
+    const addButton = document.getElementById('add-field-button');
+    const formData = document.getElementById('form-data');
+    const selectContainer = document.getElementById('select-container');
+    const csrfToken = document.getElementsByName('csrfmiddlewaretoken')[0].value;
+
+    addButton.addEventListener('click', () => {
+      fieldCount++;
+      const newFieldSet = document.createElement('div');
+      newFieldSet.classList.add('grid', 'md:grid-cols-2', 'md:gap-6', 'relative', 'z-0', 'w-full', 'mb-5', 'group');
+      newFieldSet.setAttribute('id', `field-set-${fieldCount}`);
+
+      newFieldSet.innerHTML = `
+        <div class="relative z-0 w-full mb-5 group">
+          <input type="text" name="column-${fieldCount}" id="column-${fieldCount}" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required />
+          <label for="column-${fieldCount}" class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Column Name</label>
+        </div>
+        <div class="relative z-0 w-full mb-5 group">
+          <select name="data-type-${fieldCount}" id="data-type-${fieldCount}" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" required>
+            <option value="" disabled selected>Select Data Type</option>
+            <option value="text">Text</option>
+            <option value="number">Number</option>
+            <option value="date">Date</option>
+          </select>
+          <label for="data-type-${fieldCount}" class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Data Type</label>
+        </div>
+        <button type="button" class="delete-field-button absolute top-0 right-0 text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-2.5 py-1.5 text-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800">Delete</button>
+      `;
+
+      inputContainer.appendChild(newFieldSet);
+
+      const deleteButton = newFieldSet.querySelector('.delete-field-button');
+      deleteButton.addEventListener('click', () => {
+        inputContainer.removeChild(newFieldSet);
+      });
+    });
+
+    formData.addEventListener('click', (e) => {
+      //selectContainer.classList.remove('hidden');
+      //selectContainer.classList.add('absolute')
+      selectContainer.replaceChildren();
+
+      const initialData = document.createElement('p');
+      initialData.classList.add('p-2', 'cursor:pointer', 'hover:bg-gray-900');
+      initialData.textContent = 'Initial Data';
+
+      selectContainer.appendChild(initialData)
+    })
+
+    const initialDeleteButton = document.querySelector('.delete-field-button');
+    if (initialDeleteButton) {
+      initialDeleteButton.addEventListener('click', (e) => {
+        e.target.closest('.group').remove();
+      });
+    }
+
+    const submitButton = document.getElementById('submit-button');
+    submitButton.addEventListener('click', (e) => {
+      e.preventDefault();
+
+      const formDataValue = formData.value;
+      const inputSets = document.querySelectorAll('#input-container .grid');
+      const jsonData = [];
+      const payload = {};
+
+      inputSets.forEach(inputSet => {
+        const columnInput = inputSet.querySelector('input[type="text"]');
+        const dataTypeInput = inputSet.querySelector('select');
+
+        if (columnInput && dataTypeInput) {
+          const columnKey = columnInput.value;
+          const dataType = dataTypeInput.value;
+
+          jsonData.push({ [columnKey]: dataType });
+        }
+      });
+
+      payload['format_name'] = formDataValue;
+      payload['fields'] = jsonData;
+
+      if (formDataValue === '' || jsonData.length === 0) {
+        return;
+      }
+
+      fetch(`{% url "data_entry:create_format" %}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': csrfToken,
+        },
+        body: JSON.stringify(payload),
+      }).then((res) => window.location.href = `{% url "data_entry:data_entry" %}`)
+        .catch(error => console.log(error));
+    });
+  });
+</script>
+{% endblock script %}
