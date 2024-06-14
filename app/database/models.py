@@ -85,8 +85,8 @@ class Data(models.Model):
     begin_date = models.DateField(auto_now_add=True)
     end_date = models.DateField(default=date(2099, 11, 11))
 
-    identity = models.CharField(max_length=50)
-    name = models.CharField(max_length=50)
+    identity = models.CharField(max_length=50, blank=True)
+    name = models.CharField(max_length=50, blank=True)
     data = models.JSONField()
     format = models.ForeignKey(to=FormatData, on_delete=models.CASCADE)
 
