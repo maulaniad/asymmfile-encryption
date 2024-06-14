@@ -102,7 +102,6 @@
       const selectedFormatId = formData.value;
       const selectedFormat = dataFormats.find(format => format.id == selectedFormatId);
       const selectedData = data.filter(data => data.format == selectedFormatId);
-      console.log(selectedData)
 
       addButton.classList.remove('hidden');
       addButton.innerHTML = `+ Input ${selectedFormat.format_name}`;
@@ -125,7 +124,6 @@
                 const td = document.createElement('td');
                 td.classList.add('px-6', 'py-3');
                 td.innerHTML = x[Object.keys(field)];
-                console.log(x[Object.keys(field)])
                 tr.appendChild(td);
               });
 
