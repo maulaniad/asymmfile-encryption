@@ -1,17 +1,17 @@
 {% extends "core.html" %}
 {% load static %}
 
-{% block title %}404 - Enkripsi RSA{% endblock title %}
+{% block title %}Forbidden - Enkripsi RSA{% endblock title %}
 
 {% block content %}
 <div class="container mx-auto px-4 py-8 flex flex-col justify-center
   items-center min-h-screen">
   <div class="w-full md:w-2/3 lg:w-1/2">
-    <img src="{% static 'icons/404.png' %}" alt="404 Icon" class="mx-auto mb-8
+    <img src="{% static 'icons/403.png' %}" alt="404 Icon" class="mx-auto mb-8
       h-48 w-48 object-cover rounded-full shadow-lg" />
-    <h2 class="text-center text-3xl font-bold mb-4">Oops! Page Not Found</h2>
+    <h2 class="text-center text-3xl font-bold mb-4">Oops! You don't have permission to access this page</h2>
     <p class="text-center text-lg text-gray-600">
-      The page you are looking for doesn't exist or has been moved.
+      The page you are looking probably isn't meant for you.
     </p>
     <div class="flex justify-center mt-8">
       <a href="/" class="px-4 py-2 bg-blue-500 text-white font-bold rounded-md

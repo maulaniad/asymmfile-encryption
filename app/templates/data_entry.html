@@ -1,0 +1,77 @@
+{% extends "core.html" %}
+{% load static %}
+
+{% block title %}Entry Data{% endblock title %}
+
+{% block content %}
+
+{% include "sidebar.html" %}
+
+<main class="p-6 md:ml-64">
+  <div>
+    <form class="max-w-md mx-auto">
+      <h1 class="my-5">Entry Data</h1>
+      <div class="relative z-0 w-full mb-5 group flex">
+        <div class="flex-1">
+          <select name="form-data" id="form-data" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" value="Choose Data Format" required>
+            {% if not data_formats %}
+              <option value="" disabled selected>Format Data Not Found</option>
+            {% else %}
+              <option value="" disabled selected>Choose Data Format</option>
+            {% endif %}
+  
+            {% for format in data_formats %}
+              <option value="{{ format.id }}">{{ format.format_name }}</option>
+            {% endfor %}
+          </select>
+          <label for="form-data" class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Choose Data Format</label>
+        </div>
+        <a href="{% url "data_entry:create_format" %}">
+          <button type="button" class="add-field-button absolute top-0 right-0 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-2.5 py-1.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Create Format</button>
+        </a>
+      </div>
+      <div id="input-container" class="space-y-4">
+      </div>
+      <button id="confirmation-button" type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 mt-4">Confirm</button>
+    </form>
+  </div>
+  <div class="my-10">
+    <div class="relative overflow-x-auto">
+      <table id="data-table" class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400"></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</main>
+
+{{ data_formats|json_script:"data-formats" }}
+
+{% endblock content %}
+
+{% block script %}
+<script>
+  const dataFormats = JSON.parse(document.getElementById('data-formats').textContent);
+
+  const confirmationButton = document.getElementById('confirmation-button');
+
+  confirmationButton.addEventListener('click', (e) => {
+    const formData = document.getElementById('form-data');
+
+    const selectedFormatId = formData.value;
+    const selectedFormat = dataFormats.find(format => format.id == selectedFormatId);
+    console.log(selectedFormat)
+    if (selectedFormat) {
+      const table = document.getElementById('data-table');
+
+      // Clear existing table header
+      table.querySelectorAll('thead th').forEach(th => th.remove());
+
+      // Create new table header
+      const headerRow = document.createElement('tr');
+      headerRow.innerHTML = selectedFormat.fields.map(field => `<th class="px-6 py-3" scope="col">${field.field_name}</th>`).join('');
+      table.querySelector('thead').appendChild(headerRow);
+    }
+  });
+</script>
+{% endblock script %}
