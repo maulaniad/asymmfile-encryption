@@ -1,6 +1,10 @@
 import random
 import math
 
+from django.core.files.base import File
+
+from helpers.aes import AES
+
 # Declare functions to be used throughout the apps.
 
 def generate_prime() -> int:
@@ -136,19 +140,55 @@ def decrypt(ciphertext: str | list, private_key: tuple) -> str:
     return decrypted_text
 
 
+def open_file(file: File | str, size: int | None = None) -> bytes:
+    if isinstance(file, File):
+        f = file.open(mode="rb")
+
+        if size:
+            file_content = f.read(size)
+        else:
+            file_content = f.read()
+
+        f.close()
+        return file_content
+
+    with open(file, 'rb') as f:
+        if size:
+            return f.read(size)
+        return f.read()
+
+
+def encrypt_file(file: File | str, key: bytes, initial_vector: bytes) -> bytes:
+    plaintext = open_file(file)
+
+    aes = AES(key)
+
+    ciphertext = aes.encrypt_cbc(plaintext, initial_vector)
+    return ciphertext
+
+
+def decrypt_file(file: File | str, key: bytes, initial_vector: bytes):
+    ciphertext = open_file(file)
+
+    aes = AES(key)
+
+    plaintext = aes.decrypt_cbc(ciphertext, initial_vector)
+    return plaintext
+
+
 if __name__ == '__main__':
     public_key, private_key = generate_keypair()
-    message = "armanda.surya97@gmail.com"
+    message = "hello_world"
 
-    user = "armanda.surya97@gmail.com"
+    user = "hello_world"
 
-    # Enkripsi pesan
-    encrypted_message = encrypt(message, public_key)
+    # Enkripsi pesan RSA
+    encrypted_message = encrypt(message, private_key)
     print(f"Pesan terenkripsi: {encrypted_message}")
     print(type(encrypted_message))
 
-    # Dekripsi pesan
-    decrypted_message = decrypt(encrypted_message, private_key)
+    # Dekripsi pesan RSA
+    decrypted_message = decrypt(encrypted_message, public_key)
     print(f"Pesan terdekripsi: {decrypted_message}")
 
     if decrypted_message == user:

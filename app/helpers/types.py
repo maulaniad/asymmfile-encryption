@@ -1,3 +1,4 @@
+from typing import Any, TypedDict
 
 # Declare types to be used by models, this will act as an ENUM of allowed values.
 
@@ -13,8 +14,14 @@ ALLOWED_FILETYPES = (
     ('md', "Markdown Documentation")
 )
 
+
 USER_ACTION = (
     ('encrypt', "File Encrypted"),
     ('decrypt', "File Decrypted"),
     ('delete', "File Deleted")
 )
+
+
+class FormatDataEntryPayload(TypedDict):
+    format_name: str
+    fields: list[dict[str, Any]]
