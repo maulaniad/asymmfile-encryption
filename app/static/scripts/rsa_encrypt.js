@@ -9,6 +9,7 @@ const keyTable = document.getElementById('key_table');
 const regButton = document.getElementById('regenerate');
 
 function isPrime(num) {
+    console.log("EUY");
     if (num < 2) return false;
     for (let i = 2; i <= Math.sqrt(num); i++) {
         if (num % i === 0) return false;
@@ -43,4 +44,3 @@ function getCode() {
 
 document.addEventListener("DOMContentLoaded", setNum);
 regButton.addEventListener('click', setNum);
-
