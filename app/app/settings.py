@@ -67,8 +67,6 @@ TEMPLATES = [
             os.path.join(BASE_DIR, 'templates'),
             os.path.join(BASE_DIR, 'templates', 'base'),
             os.path.join(BASE_DIR, 'templates', 'errors'),
-            os.path.join(BASE_DIR, 'decryption', 'templates'),
-            os.path.join(BASE_DIR, 'encryption', 'templates')
         ],
         'APP_DIRS': True,
         'OPTIONS': {
