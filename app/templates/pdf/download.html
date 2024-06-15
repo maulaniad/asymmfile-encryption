@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Download PDF</title>
+  <style>
+    .outer-container {
+      font-family: 'Arial', sans-serif;
+      background-color: #f8f9fa;
+      color: #333;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .table-container {
+      width: 90%;
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 20px;
+      background-color: #ffffff;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+    }
+
+    .elegant-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: center;
+      table-layout: auto;
+    }
+
+    .elegant-table th, .elegant-table td {
+      padding: 12px 15px;
+      border: 1px solid #dddddd;
+    }
+
+    .elegant-table thead {
+      background-color: #f1f1f1;
+    }
+
+    .elegant-table th {
+      font-size: 18px;
+      font-weight: bold;
+      color: #555;
+    }
+
+    .elegant-table tbody tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+
+    .elegant-table tbody tr:hover {
+      background-color: #f1f1f1;
+    }
+
+    .elegant-table td {
+      font-size: 16px;
+      color: #666;
+    }
+  </style>
+</head>
+
+<body>
+  <h4>{{ selected_format.format_name }}</h4>
+  <p>Generated at {{ date }}</p>
+  <div class="outer-container">
+    <div class="table-container">
+      <table id="data-table" class="elegant-table">
+        <thead>
+          {% for field in selected_format.fields %}
+            <th>{{ field }}</th>
+          {% endfor %}
+        </thead>
+        <tbody>
+          {% for x in data %}
+            <tr >
+              {% for key, value in x.items %}
+                <td>{{ value }}</td>
+              {% endfor %}
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</body>
