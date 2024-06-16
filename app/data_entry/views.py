@@ -40,7 +40,6 @@ class DataEntry(View):
         data_list = [
             {
                 'id': data.id,
-                'name': data.name,
                 'format': data.format.id,
                 'begin_date': data.begin_date.strftime('%Y-%m-%d'),
                 'end_date': data.end_date.strftime('%Y-%m-%d'),
