@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", function () {
         messageElement.textContent = "Registration failed. Please fill the data properly and try again.";
     } else if (registrationStatus == "OK") {
         messageElement.classList.add("text-green-500")
-        messageElement.textContent = "Registration successful. Please login with said account.";
+        messageElement.textContent = "Registration successful. Please login with your credentials.";
     }
     setTimeout(() => {
         messageElement.textContent = '';
