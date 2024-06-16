@@ -26,10 +26,22 @@ class File(models.Model):
     begin_date = models.DateField(auto_now_add=True)
     end_date = models.DateField(default=date(2099, 11, 11))
 
-    file = models.FileField(upload_to="uploads/")
+    file = models.FileField()
     filename = models.CharField(max_length=50)
     size = models.DecimalField(max_digits=5, decimal_places=2)
     extension = models.CharField(max_length=5, choices=ALLOWED_FILETYPES)
+    aes_key = models.CharField(max_length=255, blank=True)
+    secret_key = models.CharField(max_length=255, blank=True)
+    data = models.ForeignKey(to="Data", on_delete=models.CASCADE)
+
+    def save(self, *args, **kwargs):
+        if not self.filename:
+            self.filename = self.file.name
+        if not self.size:
+            self.size = self.file.size
+        if not self.extension:
+            self.extension = self.filename.split('.')[-1]
+        super(File, self).save(*args, **kwargs)
 
     class Meta:
         db_table = "tb_file"
@@ -85,8 +97,6 @@ class Data(models.Model):
     begin_date = models.DateField(auto_now_add=True)
     end_date = models.DateField(default=date(2099, 11, 11))
 
-    identity = models.CharField(max_length=50, blank=True)
-    name = models.CharField(max_length=50, blank=True)
     data = models.JSONField()
     format = models.ForeignKey(to=FormatData, on_delete=models.CASCADE)
 
