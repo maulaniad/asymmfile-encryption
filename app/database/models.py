@@ -31,8 +31,9 @@ class File(models.Model):
     size = models.DecimalField(max_digits=5, decimal_places=2)
     extension = models.CharField(max_length=5, choices=ALLOWED_FILETYPES)
     aes_key = models.CharField(max_length=255, blank=True)
+    vector = models.CharField(max_length=255, blank=True)
     secret_key = models.CharField(max_length=255, blank=True)
-    data = models.ForeignKey(to="Data", on_delete=models.CASCADE)
+    format = models.ForeignKey(to="FormatData", on_delete=models.CASCADE)
 
     def save(self, *args, **kwargs):
         if not self.filename:
