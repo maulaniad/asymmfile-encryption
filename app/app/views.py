@@ -3,8 +3,9 @@ from io import BytesIO
 from json import loads
 from typing import Any
 
-from django.db.models import Q
 from django.contrib.auth.hashers import make_password, check_password
+from django.core.files.uploadedfile import InMemoryUploadedFile
+from django.db.models import Q
 from django.http import HttpRequest, HttpResponse, FileResponse
 from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
@@ -13,7 +14,13 @@ from django.views import View
 from weasyprint import HTML
 
 from database.forms import LoginForm, RegisterForm
-from database.models import User, FormatData, Data
+from database.models import File, RSAKeyPair, User, FormatData, Data
+
+from helpers.functions import (generate_random_chars,
+                               generate_keypair,
+                               encrypt_file,
+                               rsa_encrypt,
+                               write_bytes_to_file)
 
 # Create your views here.
 
@@ -161,6 +168,7 @@ class MasterData(View):
 class DownloadPDF(View):
     def get(self, request: HttpRequest, *args, **kwargs) -> FileResponse | HttpResponse:
         format_id = kwargs.get('format_id', None)
+        secret_key = kwargs.get('key', None)
 
         data_formats = FormatData.objects.filter(end_date__gte=datetime.now())
         data = Data.objects.filter(
@@ -200,4 +208,40 @@ class DownloadPDF(View):
             return HttpResponse('Error generating PDF')
 
         pdf_file = BytesIO(pdf)
-        return FileResponse(pdf_file, as_attachment=True, filename="download_encrypted.pdf")
+
+        memory_pdf_file = InMemoryUploadedFile(
+            file=pdf_file,
+            field_name=None,
+            name=f"{selected_format['format_name']}_encrypted.pdf",
+            content_type="application/pdf",
+            size=int(pdf_file.getbuffer().nbytes / 1024),
+            charset=None
+        )
+
+        public_key, private_key = generate_keypair()
+        aes_key = generate_random_chars(type=bytes, length=16)
+        initial_vector = generate_random_chars(type=bytes, length=16)
+
+        file = File.objects.create(
+            file=memory_pdf_file,
+            filename=f"{selected_format['format_name']}_encrypted.pdf",
+            aes_key=aes_key,
+            vector=initial_vector,
+            secret_key=rsa_encrypt(secret_key, public_key),
+            format=data_formats.get(id=format_id)
+        )
+
+        RSAKeyPair.objects.create(
+            private_key=private_key,
+            public_key=public_key,
+            file=file
+        )
+
+        file_encrypted = encrypt_file(
+            file.file.file,
+            key=file.aes_key,                   # type: ignore
+            initial_vector=initial_vector       # type: ignore
+        )
+
+        encrypted_file = write_bytes_to_file(file_encrypted, file.file.path)
+        return FileResponse(encrypted_file, as_attachment=True, filename=file.filename)
