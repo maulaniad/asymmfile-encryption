@@ -1,13 +1,39 @@
-import random
 import math
+import os
+import random
+import string
 
-from django.core.files.base import File
+from django.core.files.base import File, ContentFile
 
 from helpers.aes import AES
 
 # Declare functions to be used throughout the apps.
 
-def generate_prime() -> int:
+def is_prime(n: int) -> bool:
+    """
+    Check if a number is prime.
+
+    Args:
+        n (int): The number to check.
+
+    Returns:
+        bool: True if the number is prime, False otherwise.
+    """
+    if n <= 1:
+        return False
+    if n <= 3:
+        return True
+    if n % 2 == 0 or n % 3 == 0:
+        return False
+    i = 5
+    while i * i <= n:
+        if n % i == 0 or n % (i + 2) == 0:
+            return False
+        i += 6
+    return True
+
+
+def generate_prime(lower: int = 2, upper: int = 50_000) -> int:
     """
     Generates a random prime number from a predefined list.
 
@@ -17,31 +43,36 @@ def generate_prime() -> int:
     Returns:
         int: A randomly chosen prime number.
     """
+    if lower > upper:
+        raise ValueError("Lower bound must be less than or equal to upper bound.")
 
-    # Fungsi ini dapat diperluas untuk menghasilkan bilangan prima yang lebih besar secara efisien
-    return random.choice([
-        2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41,
-        43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97
-    ])
+    prime_candidate = random.randint(lower, upper)
+    while not is_prime(prime_candidate):
+        prime_candidate = random.randint(lower, upper)
+
+    return prime_candidate
 
 
-def generate_keypair(p: int = generate_prime(),
-                     q: int = generate_prime()) -> tuple:
+def generate_keypair(p: int | None = None, q: int | None = None) -> tuple:
     """
-    Generates a key pair for RSA encryption and decryption.
+    Generates a key pair for RSA encryption and decryption. If no params provided, generates random prime numbers.
+    If the provided params are not prime, generates new random prime numbers.
 
     Args:
-        p (int): A prime number (optional, default is generated randomly).
-        q (int): A prime number (optional, default is generated randomly).
+        p (int, optional): A prime number. Defaults to None.
+        q (int, optional): A prime number. Defaults to None.
 
     Returns:
-        Tuple[Tuple[int, int], Tuple[int, int]]: A tuple containing the public key (e, n)
-        and the private key (d, n).
+        tuple: A tuple containing the public key (e, n) and the private key (d, n).
     """
 
-    # Memilih bilangan prima acak
-    p = generate_prime()
-    q = generate_prime()
+    if p is None or q is None:
+        p = 1
+        q = 1
+
+    if not is_prime(p) or not is_prime(q):
+        p = generate_prime()
+        q = generate_prime()
 
     n = p * q
 
@@ -101,7 +132,7 @@ def mod_inverse(a: int, m: int) -> int:
     return x1 + m0 if x1 < 0 else x1
 
 
-def encrypt(message: str | list, public_key: tuple) -> list:
+def rsa_encrypt(message: str | list, public_key: tuple) -> list:
     """
     Encrypts the given message using the provided public key.
 
@@ -119,7 +150,7 @@ def encrypt(message: str | list, public_key: tuple) -> list:
     return [pow(ord(char), e, n) for char in message]
 
 
-def decrypt(ciphertext: str | list, private_key: tuple) -> str:
+def rsa_decrypt(ciphertext: str | list, private_key: tuple) -> str:
     """
     Decrypts the given ciphertext using the provided private key.
 
@@ -140,7 +171,36 @@ def decrypt(ciphertext: str | list, private_key: tuple) -> str:
     return decrypted_text
 
 
-def open_file(file: File | str, size: int | None = None) -> bytes:
+def generate_random_chars(type: object = str, length: int = 8) -> str | bytes:
+    if type == str:
+        return "".join(
+            random.choice(string.ascii_letters + string.digits) for _ in range(length)
+        )
+
+    return os.urandom(length)
+
+
+def open_file(file: File | str | bytes, size: int | None = None) -> bytes:
+    """
+    Opens and reads a file, returning its contents as bytes.
+
+    Args:
+        file (File | str | bytes): The file to be opened and read. It can be a file-like object, a file path, or bytes.
+        size (int | None): The maximum number of bytes. Defaults to None, which means the entire file will be read.
+
+    Returns:
+        bytes: The contents of the file as bytes.
+
+    Raises:
+        FileNotFoundError: If the file specified by `file` does not exist.
+        TypeError: If `file` is not a file-like object, a file path, or bytes.
+
+    Example:
+        >>> with open('example.txt', 'rb') as f:
+        ...     contents = open_file(f)
+        ...     print(contents)
+        b"This is an example file."
+    """
     if isinstance(file, File):
         f = file.open(mode="rb")
 
@@ -158,8 +218,36 @@ def open_file(file: File | str, size: int | None = None) -> bytes:
         return f.read()
 
 
-def encrypt_file(file: File | str, key: bytes, initial_vector: bytes) -> bytes:
-    plaintext = open_file(file)
+def write_bytes_to_file(data: bytes, file_path: str):
+    with open(file_path, 'wb') as f:
+        f.write(data)
+
+    return ContentFile(data, name=file_path.split("/")[-1])
+
+
+def encrypt_file(file: File | str | bytes, key: bytes, initial_vector: bytes) -> bytes:
+    """
+    Encrypts a file using AES encryption with CBC mode.
+
+    Args:
+        file (File | str | bytes): The file to encrypt. It can be a file-like object, a file path, or raw bytes.
+        key (bytes): The encryption key.
+        initial_vector (bytes): The initial vector for encryption.
+
+    Returns:
+        bytes: The encrypted ciphertext.
+
+    Raises:
+        None
+
+    Examples:
+        >>> encrypt_file('path/to/file.txt', b'secret_key', b'initial_vector')
+        b'encrypted_data'
+    """
+    if isinstance(file, bytes):
+        plaintext = file
+    else:
+        plaintext = open_file(file)
 
     aes = AES(key)
 
@@ -167,8 +255,23 @@ def encrypt_file(file: File | str, key: bytes, initial_vector: bytes) -> bytes:
     return ciphertext
 
 
-def decrypt_file(file: File | str, key: bytes, initial_vector: bytes):
-    ciphertext = open_file(file)
+def decrypt_file(file: File | str | bytes, key: bytes, initial_vector: bytes):
+    """
+    Decrypts a file using AES encryption with CBC mode and returns the plaintext data.
+
+    Args:
+        file (File | str | bytes): The file to decrypt.
+        key (bytes): The encryption key.
+        initial_vector (bytes): The initial vector for decryption.
+
+    Returns:
+        The decrypted plaintext data.
+    """
+
+    if isinstance(file, bytes):
+        ciphertext = file
+    else:
+        ciphertext = open_file(file)
 
     aes = AES(key)
 
@@ -183,12 +286,12 @@ if __name__ == '__main__':
     user = "hello_world"
 
     # Enkripsi pesan RSA
-    encrypted_message = encrypt(message, private_key)
+    encrypted_message = rsa_encrypt(message, public_key)
     print(f"Pesan terenkripsi: {encrypted_message}")
     print(type(encrypted_message))
 
     # Dekripsi pesan RSA
-    decrypted_message = decrypt(encrypted_message, public_key)
+    decrypted_message = rsa_decrypt(encrypted_message, private_key)
     print(f"Pesan terdekripsi: {decrypted_message}")
 
     if decrypted_message == user:
