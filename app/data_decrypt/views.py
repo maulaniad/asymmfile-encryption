@@ -42,4 +42,4 @@ class DataDecrypt(View):
         initial_vector_bytes = literal_eval(rsa.file.vector)
         decrypted_file = decrypt_file(rsa.file.file.file, aes_key_bytes, initial_vector_bytes)  # type: ignore
         file = BytesIO(decrypted_file)
-        return FileResponse(file, as_attachment=True, filename=rsa.file.filename)
+        return FileResponse(file, as_attachment=True, filename="decrypted_file.pdf")
