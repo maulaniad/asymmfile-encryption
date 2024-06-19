@@ -17,17 +17,17 @@
           <tr>
             <td>Registered Accounts</td>
             <td>:</td>
-            <td><strong>10</strong></td>
+            <td><strong>{{ registered_accounts }}</strong></td>
           </tr>
           <tr>
             <td>Decryption Attempts</td>
             <td>:</td>
-            <td><strong>50</strong></td>
+            <td><strong>11</strong></td>
           </tr>
           <tr>
             <td>Decryption Attempts by You</td>
             <td>:</td>
-            <td><strong>5</strong></td>
+            <td><strong>{{ my_decryption_attempts }}</strong></td>
           </tr>
         </table>
       </div>
@@ -40,21 +40,21 @@
 {% block script %}
   <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      // Sample data
-      const dataGroups = [
-        { name: 'Group A', count: 10 },
-        { name: 'Group B', count: 20 },
-        { name: 'Group C', count: 30 },
-        { name: 'Group D', count: 40 },
-      ];
+    const dataGroups = [];
 
-      // Extract names and counts from the data
+    {% for format in data_format_counts %}
+      dataGroups.push({ name: "{{ format.name }}", count: {{ format.count }} });
+    {% endfor %}
+
+    const currentMonthFiles = {{ current_month_files_count|default:0 }};
+    const previousMonthFiles = {{ previous_month_files_count|default:0 }};
+    const growthPercentage = {{ growth_percentage|default:0 }};
+
+    document.addEventListener('DOMContentLoaded', function () {
       const labels = dataGroups.map(group => group.name);
       const series = dataGroups.map(group => group.count);
       const totalData = series.reduce((acc, count) => acc + count, 0);
 
-      // Configure the chart
       const options = {
         chart: {
           type: 'pie',
@@ -85,7 +85,7 @@
         dataLabels: {
           enabled: true,
           formatter: function(val, opts) {
-            return val + '%';
+            return val.toFixed(2) + '%';
           }
         },
         title: {
@@ -100,11 +100,6 @@
       const chart = new ApexCharts(document.querySelector("#chart"), options);
       chart.render();
 
-      const currentMonthFiles = 150;
-      const previousMonthFiles = 120;
-      const growthPercentage = ((currentMonthFiles - previousMonthFiles) / previousMonthFiles * 100).toFixed(2);
-
-      // Configure the bar chart
       const growthOptions = {
         chart: {
           type: 'bar',

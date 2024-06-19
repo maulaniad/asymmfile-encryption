@@ -1,8 +1,10 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from io import BytesIO
 from json import loads, dumps
+from os import listdir, path
 from typing import Any
 
+from django.conf import settings
 from django.contrib.auth.hashers import make_password, check_password
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.db.models import Q
@@ -116,9 +118,56 @@ class Logout(View):
 
 class Dashboard(View):
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+        my_decryption_attempts = request.session.get('decryption_attempts', 0)
+        registered_accounts = User.objects.all().count()
+        data_formats = FormatData.objects.all()
+
+        data_format_counts: list[dict[str, Any]] = []
+        for data_format in data_formats:
+            data_count = Data.objects.filter(
+                format_id=data_format.id
+            ).count()
+
+            data_format_counts.append({
+                'name': data_format.format_name,
+                'count': data_count
+            })
+
+        current_month_files = []
+        for file in listdir(settings.MEDIA_ROOT):
+            file_date = path.getctime(path.join(settings.MEDIA_ROOT, file))
+            readable_date = datetime.fromtimestamp(file_date).date()
+            if readable_date.month == datetime.now().month:
+                current_month_files.append(file)
+
+        previous_month_files = []
+        for file in listdir(settings.MEDIA_ROOT):
+            file_date = path.getctime(path.join(settings.MEDIA_ROOT, file))
+            readable_date = datetime.fromtimestamp(file_date).date()
+            if readable_date.month == (datetime.now() - timedelta(days=30)).month:
+                previous_month_files.append(file)
+
+        previous_month_files_count = len(previous_month_files)
+        current_month_files_count = len(current_month_files)
+
+        if previous_month_files_count == 0:
+            growth_percentage = 0.0
+        else:
+            growth_percentage = (
+                (current_month_files_count - previous_month_files_count) / previous_month_files_count * 100
+            )
+
         return render(
             request=request,
             template_name="dashboard.html",
+            context={
+                'my_decryption_attempts': my_decryption_attempts,
+                'registered_accounts': registered_accounts,
+                'data_format_counts': data_format_counts,
+                'prev_month_files_count': previous_month_files_count,
+                'curr_month_files_count': current_month_files_count,
+                'growth_percentage': float(f"{growth_percentage:.2f}")
+            }
         )
 
 
