@@ -11,7 +11,7 @@ from database.models import RSAKeyPair
 # Create your views here.
 
 class DataDecrypt(View):
-    def get(self, request, *args, **kwargs) -> HttpResponse:
+    def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         return render(request, 'data_decrypt.html')
 
     def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse | FileResponse:
@@ -45,6 +45,9 @@ class DataDecrypt(View):
             write_bytes_to_file(decrypted_file, rsa.file.file.path)
             rsa.file.status = FileStatus.DECRYPTED  # type: ignore
             rsa.file.save()
+
+        my_decryption_attempts = request.session.get('decryption_attempts', 0)
+        request.session['decryption_attempts'] = my_decryption_attempts + 1
 
         file_to_return = open(rsa.file.file.path, 'rb')
         return FileResponse(file_to_return, as_attachment=True, filename="decrypted_file.pdf")
