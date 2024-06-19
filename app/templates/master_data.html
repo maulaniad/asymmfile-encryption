@@ -102,11 +102,24 @@
           </div>
           {% if format_id %}
             <a href="#" id="dynamic-link">
-              <button type="button" class="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+              <button type="button" id="download-button" class="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                 <p id="modal-action">Download</p>
+                <span id="loading-animation" class="ml-2 hidden">
+                  <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.292A7.964 7.964 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.646z"></path>
+                  </svg>
+                </span>
               </button>
             </a>
           {% endif %}
+          <div class="my-3" id="response-message">
+            <p id="private-key-field" class="text-sm"></p>
+            <p id="public-key-field" class="text-sm"></p>
+            <p id="note-field" class="hidden text-sm my-1">
+              Save both Key sequences in safe place, <strong>Private Key</strong> sequences will be used for decryption.
+            </p>
+          </div>
         </form>
       </div>
     </div>
@@ -119,11 +132,67 @@
     document.getElementById('key').addEventListener('change', (e) => {
       const inputValue = e.target.value;
       const dynamicLink = document.getElementById('dynamic-link');
-      const baseUrl = "/data/download/";
+      const baseUrl = "/data/generate-pdf/";
       const format_id = document.getElementById('format').value;
 
       const newUrl = baseUrl + encodeURIComponent(format_id) + "/" + encodeURIComponent(inputValue);
       dynamicLink.href = newUrl;
     });
+
+    const requestDownload = async (event) => {
+      event.preventDefault();
+
+      const url = event.currentTarget.href;
+      const downloadButton = document.getElementById('download-button');
+      const loadingAnimation = document.getElementById('loading-animation');
+      const privatekeyField = document.getElementById('private-key-field');
+      const publickeyField = document.getElementById('public-key-field');
+      const noteField = document.getElementById('note-field');
+
+      downloadButton.disabled = true;
+      const disabledStyles = ['bg-gray-400', 'dark:bg-gray-400', 'hover:bg-gray-400', 'dark:hover:bg-gray-400']
+      downloadButton.classList.add(...disabledStyles);
+
+      loadingAnimation.classList.remove('hidden');
+
+      try {
+        const response = await fetch(url);
+
+        if (response.status !== 200) {
+          throw new Error('Request failed');
+        }
+
+        const data = await response.json();
+        const filename = data.filename;
+
+        const fileResponse = await fetch("/download/" + encodeURIComponent(filename) + "/");
+        if (fileResponse.status !== 200) {
+          throw new Error('Network response was not ok on second request');
+        }
+
+        noteField.classList.remove('hidden');
+        privatekeyField.textContent = "Private Key : " + data.private_key;
+        publickeyField.textContent = "Public Key : " + data.public_key;
+
+        const blob = await fileResponse.blob();
+        const downloadUrl = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+
+        a.href = downloadUrl;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(downloadUrl);
+      } catch (error) {
+        console.error('There was a problem with the fetch operation:', error);
+      } finally {
+        loadingAnimation.classList.add('hidden');
+        downloadButton.disabled = false;
+        downloadButton.classList.remove(...disabledStyles);
+      }
+    }
+
+    document.getElementById('dynamic-link').addEventListener('click', requestDownload);
   </script>
 {% endblock script %}

@@ -1,6 +1,6 @@
 from datetime import datetime
 from io import BytesIO
-from json import loads
+from json import loads, dumps
 from typing import Any
 
 from django.contrib.auth.hashers import make_password, check_password
@@ -16,6 +16,7 @@ from weasyprint import HTML
 from database.forms import LoginForm, RegisterForm
 from database.models import File, RSAKeyPair, User, FormatData, Data
 
+from helpers.types import FileStatus
 from helpers.functions import (generate_random_chars,
                                generate_keypair,
                                encrypt_file,
@@ -165,8 +166,8 @@ class MasterData(View):
         return render(request=request, template_name="master_data.html", context=context)
 
 
-class DownloadPDF(View):
-    def get(self, request: HttpRequest, *args, **kwargs) -> FileResponse | HttpResponse:
+class GeneratePDF(View):
+    def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         format_id = kwargs.get('format_id', None)
         secret_key = kwargs.get('key', None)
 
@@ -228,7 +229,8 @@ class DownloadPDF(View):
             aes_key=aes_key,
             vector=initial_vector,
             secret_key=rsa_encrypt(secret_key, public_key),
-            format=data_formats.get(id=format_id)
+            format=data_formats.get(id=format_id),
+            status=FileStatus.ENCRYPTED
         )
 
         RSAKeyPair.objects.create(
@@ -243,5 +245,22 @@ class DownloadPDF(View):
             initial_vector=initial_vector       # type: ignore
         )
 
-        encrypted_file = write_bytes_to_file(file_encrypted, file.file.path)
-        return FileResponse(encrypted_file, as_attachment=True, filename=file.filename)
+        write_bytes_to_file(file_encrypted, file.file.path)
+        response = HttpResponse(
+            content=dumps({
+                'private_key': private_key,
+                'public_key': public_key,
+                'filename': file.file.name
+            }),
+            content_type="application/json",
+            status=200
+        )
+        return response
+
+
+class DownloadFile(View):
+    def get(self, request: HttpRequest, *args, **kwargs):
+        filename = kwargs.get('filename', None)
+        file = File.objects.get(file=filename)
+
+        return FileResponse(file.file, as_attachment=True)
