@@ -4,15 +4,132 @@
 {% block title %}Dashboard{% endblock title %}
 
 {% block content %}
+  {% include "sidebar.html" %}
 
+  <main class="p-4 md:ml-64">
+    <div class="mb-10 mt-5">
+      <h1 class="text-3xl text-center mb-4">Selamat Datang, <span class="font-bold">{{ request.session.fullname }}</span></h1>
+    </div>
 
-{% include "sidebar.html" %}
-
-<main class="p-4 md:ml-64">
-    
-</main>
+    <div class="flex justify-evenly items-center bg-gray-800 rounded-lg">
+      <div class="m-auto max-w-80 p-5">
+        <table>
+          <tr>
+            <td>Registered Accounts</td>
+            <td>:</td>
+            <td><strong>10</strong></td>
+          </tr>
+          <tr>
+            <td>Decryption Attempts</td>
+            <td>:</td>
+            <td><strong>50</strong></td>
+          </tr>
+          <tr>
+            <td>Decryption Attempts by You</td>
+            <td>:</td>
+            <td><strong>5</strong></td>
+          </tr>
+        </table>
+      </div>
+      <div id="chart" class="max-w-md mx-auto"></div>
+      <div id="growth-chart" class="max-w-md mx-auto"></div>
+    </div>
+  </main>
 {% endblock content %}
 
-
 {% block script %}
+  <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // Sample data
+      const dataGroups = [
+        { name: 'Group A', count: 10 },
+        { name: 'Group B', count: 20 },
+        { name: 'Group C', count: 30 },
+        { name: 'Group D', count: 40 },
+      ];
+
+      // Extract names and counts from the data
+      const labels = dataGroups.map(group => group.name);
+      const series = dataGroups.map(group => group.count);
+      const totalData = series.reduce((acc, count) => acc + count, 0);
+
+      // Configure the chart
+      const options = {
+        chart: {
+          type: 'pie',
+          height: 350,
+          events: {
+            dataPointSelection: function(event, chartContext, config) {
+              // Handle data point selection if needed
+            }
+          }
+        },
+        series: series,
+        labels: labels,
+        colors: ['#FF6384', '#36A2EB', '#FFCE56', '#4CAF50'],
+        legend: {
+          position: 'bottom'
+        },
+        responsive: [{
+          breakpoint: 480,
+          options: {
+            chart: {
+              width: 300
+            },
+            legend: {
+              position: 'bottom'
+            }
+          }
+        }],
+        dataLabels: {
+          enabled: true,
+          formatter: function(val, opts) {
+            return val + '%';
+          }
+        },
+        title: {
+          text: `Total Data: ${totalData}`,
+          align: 'center',
+          style: {
+            fontSize: '18px'
+          }
+        }
+      };
+
+      const chart = new ApexCharts(document.querySelector("#chart"), options);
+      chart.render();
+
+      const currentMonthFiles = 150;
+      const previousMonthFiles = 120;
+      const growthPercentage = ((currentMonthFiles - previousMonthFiles) / previousMonthFiles * 100).toFixed(2);
+
+      // Configure the bar chart
+      const growthOptions = {
+        chart: {
+          type: 'bar',
+          height: 350,
+        },
+        series: [{
+          name: 'Growth Percentage',
+          data: [growthPercentage]
+        }],
+        xaxis: {
+          categories: ['Growth Percentage']
+        },
+        yaxis: {
+          title: {
+            text: 'Percentage (%)'
+          }
+        },
+        colors: ['#FF4560'],
+        toolbar: {
+          show: false
+        }
+      };
+
+      const growthChart = new ApexCharts(document.querySelector("#growth-chart"), growthOptions);
+      growthChart.render();
+    });
+  </script>
 {% endblock script %}
