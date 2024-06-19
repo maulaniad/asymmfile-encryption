@@ -1,3 +1,4 @@
+from enum import Enum
 from typing import Any, TypedDict
 
 # Declare types to be used by models, this will act as an ENUM of allowed values.
@@ -20,6 +21,11 @@ USER_ACTION = (
     ('decrypt', "File Decrypted"),
     ('delete', "File Deleted")
 )
+
+
+class FileStatus(Enum):
+    ENCRYPTED = "ENCRYPTED"
+    DECRYPTED = "DECRYPTED"
 
 
 class FormatDataEntryPayload(TypedDict):
