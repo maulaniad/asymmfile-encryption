@@ -1,11 +1,11 @@
 from ast import literal_eval
-from io import BytesIO
 
 from django.http import HttpRequest, HttpResponse, FileResponse
 from django.shortcuts import render
 from django.views import View
 
-from helpers.functions import rsa_decrypt, decrypt_file
+from helpers.types import FileStatus
+from helpers.functions import rsa_decrypt, decrypt_file, write_bytes_to_file
 from database.models import RSAKeyPair
 
 # Create your views here.
@@ -26,7 +26,7 @@ class DataDecrypt(View):
         key_stripped = tuple(int(key.strip()) for key in key_sequences)
 
         try:
-            rsa = RSAKeyPair.objects.get(public_key=key_stripped)
+            rsa = RSAKeyPair.objects.get(private_key=key_stripped)
         except RSAKeyPair.DoesNotExist:
             return render(request, 'data_decrypt.html', {'error': "Key does not match with any registered Key Pairs"})
 
@@ -36,10 +36,15 @@ class DataDecrypt(View):
 
         real_key = rsa_decrypt(formed_secret_key, tupled_private_key)  # type: ignore
         if real_key != secret_key:
-            return render(request, 'data_decrypt.html', {'error': "Passphrase does not match with the expected value"})
+            return render(request, 'data_decrypt.html', {'error': "Passphrase does not match the expected value"})
 
-        aes_key_bytes = literal_eval(rsa.file.aes_key)
-        initial_vector_bytes = literal_eval(rsa.file.vector)
-        decrypted_file = decrypt_file(rsa.file.file.file, aes_key_bytes, initial_vector_bytes)  # type: ignore
-        file = BytesIO(decrypted_file)
-        return FileResponse(file, as_attachment=True, filename="decrypted_file.pdf")
+        if rsa.file.status == FileStatus.ENCRYPTED.value:
+            aes_key_bytes = literal_eval(rsa.file.aes_key)
+            initial_vector_bytes = literal_eval(rsa.file.vector)
+            decrypted_file = decrypt_file(rsa.file.file.file, aes_key_bytes, initial_vector_bytes)  # type: ignore
+            write_bytes_to_file(decrypted_file, rsa.file.file.path)
+            rsa.file.status = FileStatus.DECRYPTED  # type: ignore
+            rsa.file.save()
+
+        file_to_return = open(rsa.file.file.path, 'rb')
+        return FileResponse(file_to_return, as_attachment=True, filename="decrypted_file.pdf")
