@@ -13,11 +13,12 @@
     <select name="format" id="format" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" value="Choose Data Format" required>
       {% if not data_formats %}
         <option value="" disabled selected>No Data Format Found, You Can Create One at - Entry Data - Menu</option>
+      {% else %}
+        {% if not selected_format %}
+          <option value="" disabled selected>Choose Data Format</option>
+        {% endif %}
       {% endif %}
 
-      {% if not selected_format %}
-        <option value="" disabled selected>Choose Data Format</option>
-      {% endif %}
 
       {% for format in data_formats %}
         <option value="{{ format.id }}" {% if format.id == selected_format.id %} selected {% endif %}>{{ format.format_name }}</option>
