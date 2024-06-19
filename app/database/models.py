@@ -3,7 +3,7 @@ from json import dumps
 
 from django.db import models
 
-from helpers.types import ALLOWED_FILETYPES, USER_ACTION
+from helpers.types import ALLOWED_FILETYPES, USER_ACTION, FileStatus
 
 # Create your models here.
 
@@ -34,6 +34,7 @@ class File(models.Model):
     vector = models.CharField(max_length=255, blank=True)
     secret_key = models.CharField(max_length=255, blank=True)
     format = models.ForeignKey(to="FormatData", on_delete=models.CASCADE)
+    status = models.CharField(max_length=10, blank=True)
 
     def save(self, *args, **kwargs):
         if not self.filename:
@@ -42,6 +43,8 @@ class File(models.Model):
             self.size = self.file.size
         if not self.extension:
             self.extension = self.filename.split('.')[-1]
+        if isinstance(self.status, FileStatus):
+            self.status = self.status.value
         super(File, self).save(*args, **kwargs)
 
     class Meta:
